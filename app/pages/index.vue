@@ -17,6 +17,16 @@ const status = reactive({ loading: false, saving: false, syncing: false, diffing
 const errorMsg = ref("");
 const diffParts = ref<any[]>([]);
 const showDiff = ref(false);
+const diffHtml = computed(() => {
+  return diffParts.value
+    .map((part) => {
+      const safeText = escapeHtml(String(part.value ?? ""));
+      if (part.added) return `<span class="added">${safeText}</span>`;
+      if (part.removed) return `<span class="removed">${safeText}</span>`;
+      return safeText;
+    })
+    .join("");
+});
 
 const selectedProject = computed<Project | null>(() => {
   return projects.value.find((item) => item.id === selectedProjectId.value) ?? null;
@@ -59,6 +69,15 @@ function parseFiles(value: string) {
     .split(/\r?\n/)
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function fillProjectForm() {
@@ -263,6 +282,14 @@ async function loadDiff() {
   }
 }
 
+function toggleDiff() {
+  if (showDiff.value) {
+    showDiff.value = false;
+    return;
+  }
+  loadDiff();
+}
+
 const envTabs: { key: EnvKey; label: string }[] = [
   { key: "local", label: "本地" },
   { key: "campus", label: "校内" },
@@ -340,7 +367,9 @@ const showSyncButton = computed(() => {
           >
             同步到远端
           </button>
-          <button class="ghost" @click="loadDiff" :disabled="status.diffing">对比</button>
+          <button class="ghost" @click="toggleDiff" :disabled="status.diffing">
+            {{ showDiff ? "取消对比" : "对比" }}
+          </button>
         </div>
       </section>
 
@@ -356,7 +385,8 @@ const showSyncButton = computed(() => {
           </div>
           <div class="status">{{ status.loading ? "读取中..." : "" }}</div>
         </div>
-        <textarea v-model="content" class="editor" spellcheck="false" />
+        <pre v-if="showDiff" class="diff" v-html="diffHtml"></pre>
+        <textarea v-else v-model="content" class="editor" spellcheck="false" />
         <div v-if="warnings.length" class="warnings">
           <div class="warnings-title">格式提醒</div>
           <ul>
@@ -364,20 +394,6 @@ const showSyncButton = computed(() => {
           </ul>
         </div>
         <div v-if="errorMsg" class="error">{{ errorMsg }}</div>
-      </section>
-
-      <section v-if="showDiff" class="diff-card">
-        <div class="diff-header">
-          <div class="editor-title">对比视图</div>
-          <button class="ghost" @click="showDiff = false">关闭</button>
-        </div>
-        <pre class="diff">
-<span
-  v-for="(part, index) in diffParts"
-  :key="index"
-  :class="{ added: part.added, removed: part.removed }"
->{{ part.value }}</span>
-        </pre>
       </section>
     </main>
 
