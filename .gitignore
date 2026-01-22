@@ -24,4 +24,5 @@ logs
 # Local data cache/logs
 data/cache
 data/workspace
+data/projects.json
 data/audit.log
