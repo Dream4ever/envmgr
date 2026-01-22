@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Project, EnvKey } from "~/shared/types";
+import type { Project, EnvKey } from "#shared/types";
 
 const { data, refresh, pending } = await useFetch("/api/projects");
 const projects = computed<Project[]>(() => data.value?.projects ?? []);
