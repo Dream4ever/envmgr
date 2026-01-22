@@ -385,6 +385,12 @@ const isDirty = computed(() => content.value !== baseContent.value);
       </section>
 
       <section class="editor-card">
+        <div v-if="status.loading" class="loading-overlay">
+          <div class="loading-card">
+            <div class="loading-title">读取中...</div>
+            <div class="loading-sub">正在加载文件</div>
+          </div>
+        </div>
         <div class="editor-header">
           <div>
             <div class="editor-title">{{ selectedProject?.name || "未选择项目" }}</div>
@@ -394,7 +400,6 @@ const isDirty = computed(() => content.value !== baseContent.value);
               <span>待同步版本：{{ workspaceExists ? "已存在" : "无" }}</span>
             </div>
           </div>
-          <div class="status">{{ status.loading ? "读取中..." : "" }}</div>
         </div>
         <pre v-if="showDiff" class="diff" v-html="diffHtml"></pre>
         <textarea v-else v-model="content" class="editor" spellcheck="false" />

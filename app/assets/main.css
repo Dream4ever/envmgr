@@ -205,6 +205,7 @@ body {
   border: 1px solid var(--border);
   padding: 16px;
   box-shadow: var(--shadow);
+  position: relative;
 }
 
 .editor-header {
@@ -279,6 +280,38 @@ body {
 
 .diff .removed {
   background: rgba(178, 70, 45, 0.18);
+}
+
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(252, 247, 238, 0.78);
+  backdrop-filter: blur(3px);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+}
+
+.loading-card {
+  text-align: center;
+  padding: 16px 24px;
+  border-radius: 14px;
+  background: white;
+  border: 1px solid var(--border);
+  box-shadow: 0 18px 35px rgba(23, 18, 8, 0.12);
+}
+
+.loading-title {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.loading-sub {
+  font-size: 12px;
+  color: var(--muted);
 }
 
 .panel-header {
