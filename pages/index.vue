@@ -38,6 +38,13 @@ const projectForm = reactive({
 });
 
 function selectProject(projectId: string) {
+  if (projectId === selectedProjectId.value) {
+    projectFormMode.value = "view";
+    fillProjectForm();
+    return;
+  }
+  selectedFile.value = "";
+  selectedEnv.value = "local";
   selectedProjectId.value = projectId;
   projectFormMode.value = "view";
   fillProjectForm();
@@ -135,14 +142,19 @@ async function deleteProject() {
   if (!confirm("确定要删除该项目吗？")) return;
   await $fetch(`/api/projects/${projectForm.id}`, { method: "DELETE" });
   await refresh();
-  selectedProjectId.value = projects.value[0]?.id ?? "";
-  fillProjectForm();
+  const nextId = projects.value[0]?.id ?? "";
+  if (nextId) {
+    selectProject(nextId);
+  } else {
+    selectedProjectId.value = "";
+    selectedFile.value = "";
+    fillProjectForm();
+  }
 }
 
 watch(projects, () => {
   if (!selectedProjectId.value && projects.value.length) {
-    selectedProjectId.value = projects.value[0].id;
-    fillProjectForm();
+    selectProject(projects.value[0].id);
   }
 });
 
