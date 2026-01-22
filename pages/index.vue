@@ -272,7 +272,7 @@ const envTabs: { key: EnvKey; label: string }[] = [
 const sourceLabels: Record<string, string> = {
   local: "本地",
   remote: "远端",
-  workspace: "工作区"
+  workspace: "待同步版本"
 };
 
 const sourceText = computed(() => sourceLabels[source.value] ?? source.value ?? "-");
@@ -334,7 +334,7 @@ const sourceText = computed(() => sourceLabels[source.value] ?? source.value ?? 
             <div class="editor-meta">
               <span>来源：{{ sourceText }}</span>
               <span>路径：{{ path || "-" }}</span>
-              <span>工作区：{{ workspaceExists ? "已存在" : "无" }}</span>
+              <span>待同步版本：{{ workspaceExists ? "已存在" : "无" }}</span>
             </div>
           </div>
           <div class="status">{{ status.loading ? "读取中..." : "" }}</div>
