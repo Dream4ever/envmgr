@@ -17,6 +17,7 @@ const status = reactive({ loading: false, saving: false, syncing: false, diffing
 const errorMsg = ref("");
 const diffParts = ref<any[]>([]);
 const showDiff = ref(false);
+const baseContent = ref("");
 const diffHtml = computed(() => {
   return diffParts.value
     .map((part) => {
@@ -56,6 +57,7 @@ function selectProject(projectId: string) {
   selectedFile.value = "";
   selectedEnv.value = "local";
   selectedProjectId.value = projectId;
+  resetDiffState();
   projectFormMode.value = "view";
   fillProjectForm();
 }
@@ -78,6 +80,11 @@ function escapeHtml(value: string) {
     .replace(/>/g, "&gt;")
     .replace(/\"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+function resetDiffState() {
+  showDiff.value = false;
+  diffParts.value = [];
 }
 
 function fillProjectForm() {
@@ -178,6 +185,7 @@ watch(projects, () => {
 });
 
 watch([selectedProjectId, selectedEnv], () => {
+  resetDiffState();
   const list = files.value;
   if (!list.includes(selectedFile.value)) {
     selectedFile.value = list[0] ?? "";
@@ -211,6 +219,7 @@ async function loadFile() {
       source.value = res.source || "";
     }
     path.value = res.path || "";
+    baseContent.value = content.value;
   } catch (error: any) {
     errorMsg.value = error?.data?.statusMessage || error?.message || "读取失败";
   } finally {
@@ -234,6 +243,7 @@ async function saveEnv() {
     });
     warnings.value = res.warnings ?? [];
     workspaceExists.value = true;
+    baseContent.value = content.value;
   } catch (error: any) {
     errorMsg.value = error?.data?.statusMessage || error?.message || "保存失败";
   } finally {
@@ -313,6 +323,7 @@ const showSyncButton = computed(() => {
       workspaceExists.value
   );
 });
+const isDirty = computed(() => content.value !== baseContent.value);
 </script>
 
 <template>
@@ -358,7 +369,7 @@ const showSyncButton = computed(() => {
             <option v-for="file in files" :key="file" :value="file">{{ file }}</option>
           </select>
           <button class="ghost" @click="loadFile" :disabled="status.loading">刷新</button>
-          <button class="primary" @click="saveEnv" :disabled="status.saving">保存</button>
+          <button class="primary" @click="saveEnv" :disabled="status.saving || !isDirty">保存</button>
           <button
             v-if="showSyncButton"
             class="accent"
