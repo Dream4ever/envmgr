@@ -276,6 +276,16 @@ const sourceLabels: Record<string, string> = {
 };
 
 const sourceText = computed(() => sourceLabels[source.value] ?? source.value ?? "-");
+const showSyncButton = computed(() => {
+  if (status.loading) return false;
+  return Boolean(
+    selectedProjectId.value &&
+      selectedFile.value &&
+      selectedEnv.value !== "local" &&
+      source.value !== "local" &&
+      workspaceExists.value
+  );
+});
 </script>
 
 <template>
@@ -322,7 +332,14 @@ const sourceText = computed(() => sourceLabels[source.value] ?? source.value ?? 
           </select>
           <button class="ghost" @click="loadFile" :disabled="status.loading">刷新</button>
           <button class="primary" @click="saveEnv" :disabled="status.saving">保存</button>
-          <button class="accent" @click="syncEnv" :disabled="selectedEnv === 'local' || status.syncing">同步到远端</button>
+          <button
+            v-if="showSyncButton"
+            class="accent"
+            @click="syncEnv"
+            :disabled="status.syncing"
+          >
+            同步到远端
+          </button>
           <button class="ghost" @click="loadDiff" :disabled="status.diffing">对比</button>
         </div>
       </section>
