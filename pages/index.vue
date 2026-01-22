@@ -126,13 +126,13 @@ async function saveProject() {
       selectProject(projectForm.id);
     }
   } catch (error: any) {
-    errorMsg.value = error?.data?.statusMessage || error?.message || "Project save failed";
+    errorMsg.value = error?.data?.statusMessage || error?.message || "保存项目失败";
   }
 }
 
 async function deleteProject() {
   if (!projectForm.id) return;
-  if (!confirm("Delete this project?")) return;
+  if (!confirm("确定要删除该项目吗？")) return;
   await $fetch(`/api/projects/${projectForm.id}`, { method: "DELETE" });
   await refresh();
   selectedProjectId.value = projects.value[0]?.id ?? "";
@@ -181,7 +181,7 @@ async function loadFile() {
     }
     path.value = res.path || "";
   } catch (error: any) {
-    errorMsg.value = error?.data?.statusMessage || error?.message || "Load failed";
+    errorMsg.value = error?.data?.statusMessage || error?.message || "读取失败";
   } finally {
     status.loading = false;
   }
@@ -204,7 +204,7 @@ async function saveEnv() {
     warnings.value = res.warnings ?? [];
     workspaceExists.value = true;
   } catch (error: any) {
-    errorMsg.value = error?.data?.statusMessage || error?.message || "Save failed";
+    errorMsg.value = error?.data?.statusMessage || error?.message || "保存失败";
   } finally {
     status.saving = false;
   }
@@ -224,7 +224,7 @@ async function syncEnv() {
       }
     });
   } catch (error: any) {
-    errorMsg.value = error?.data?.statusMessage || error?.message || "Sync failed";
+    errorMsg.value = error?.data?.statusMessage || error?.message || "同步失败";
   } finally {
     status.syncing = false;
   }
@@ -245,17 +245,25 @@ async function loadDiff() {
     diffParts.value = res.diff ?? [];
     showDiff.value = true;
   } catch (error: any) {
-    errorMsg.value = error?.data?.statusMessage || error?.message || "Diff failed";
+    errorMsg.value = error?.data?.statusMessage || error?.message || "对比失败";
   } finally {
     status.diffing = false;
   }
 }
 
 const envTabs: { key: EnvKey; label: string }[] = [
-  { key: "local", label: "Local" },
-  { key: "campus", label: "Campus" },
-  { key: "aliyun", label: "Aliyun" }
+  { key: "local", label: "本地" },
+  { key: "campus", label: "校内" },
+  { key: "aliyun", label: "阿里云" }
 ];
+
+const sourceLabels: Record<string, string> = {
+  local: "本地",
+  remote: "远端",
+  workspace: "工作区"
+};
+
+const sourceText = computed(() => sourceLabels[source.value] ?? source.value ?? "-");
 </script>
 
 <template>
@@ -263,10 +271,10 @@ const envTabs: { key: EnvKey; label: string }[] = [
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-title">EnvMgr</div>
-        <div class="brand-sub">multi-env dashboard</div>
+        <div class="brand-sub">多环境管理面板</div>
       </div>
-      <button class="primary" @click="startCreateProject">+ New Project</button>
-      <button class="ghost" @click="refresh" :disabled="pending">Refresh</button>
+      <button class="primary" @click="startCreateProject">+ 新项目</button>
+      <button class="ghost" @click="refresh" :disabled="pending">刷新列表</button>
       <div class="project-list">
         <button
           v-for="project in projects"
@@ -276,9 +284,9 @@ const envTabs: { key: EnvKey; label: string }[] = [
           @click="selectProject(project.id)"
         >
           <div class="project-name">{{ project.name }}</div>
-          <div class="project-meta">local / campus / aliyun</div>
+          <div class="project-meta">本地 / 校内 / 阿里云</div>
         </button>
-        <div v-if="projects.length === 0" class="empty">No projects</div>
+        <div v-if="projects.length === 0" class="empty">暂无项目</div>
       </div>
     </aside>
 
@@ -297,31 +305,31 @@ const envTabs: { key: EnvKey; label: string }[] = [
         </div>
         <div class="toolbar-actions">
           <select v-model="selectedFile" class="file-select">
-            <option value="" disabled>Select file</option>
+            <option value="" disabled>选择文件</option>
             <option v-for="file in files" :key="file" :value="file">{{ file }}</option>
           </select>
-          <button class="ghost" @click="loadFile" :disabled="status.loading">Reload</button>
-          <button class="primary" @click="saveEnv" :disabled="status.saving">Save</button>
-          <button class="accent" @click="syncEnv" :disabled="selectedEnv === 'local' || status.syncing">Sync Remote</button>
-          <button class="ghost" @click="loadDiff" :disabled="status.diffing">Diff</button>
+          <button class="ghost" @click="loadFile" :disabled="status.loading">刷新</button>
+          <button class="primary" @click="saveEnv" :disabled="status.saving">保存</button>
+          <button class="accent" @click="syncEnv" :disabled="selectedEnv === 'local' || status.syncing">同步到远端</button>
+          <button class="ghost" @click="loadDiff" :disabled="status.diffing">对比</button>
         </div>
       </section>
 
       <section class="editor-card">
         <div class="editor-header">
           <div>
-            <div class="editor-title">{{ selectedProject?.name || "No project" }}</div>
+            <div class="editor-title">{{ selectedProject?.name || "未选择项目" }}</div>
             <div class="editor-meta">
-              <span>Source: {{ source || "-" }}</span>
-              <span>Path: {{ path || "-" }}</span>
-              <span>Workspace: {{ workspaceExists ? "present" : "none" }}</span>
+              <span>来源：{{ sourceText }}</span>
+              <span>路径：{{ path || "-" }}</span>
+              <span>工作区：{{ workspaceExists ? "已存在" : "无" }}</span>
             </div>
           </div>
-          <div class="status">{{ status.loading ? "Loading..." : "" }}</div>
+          <div class="status">{{ status.loading ? "读取中..." : "" }}</div>
         </div>
         <textarea v-model="content" class="editor" spellcheck="false" />
         <div v-if="warnings.length" class="warnings">
-          <div class="warnings-title">Format Warnings</div>
+          <div class="warnings-title">格式提醒</div>
           <ul>
             <li v-for="warning in warnings" :key="warning">{{ warning }}</li>
           </ul>
@@ -331,8 +339,8 @@ const envTabs: { key: EnvKey; label: string }[] = [
 
       <section v-if="showDiff" class="diff-card">
         <div class="diff-header">
-          <div class="editor-title">Diff View</div>
-          <button class="ghost" @click="showDiff = false">Close</button>
+          <div class="editor-title">对比视图</div>
+          <button class="ghost" @click="showDiff = false">关闭</button>
         </div>
         <pre class="diff">
 <span
@@ -347,71 +355,71 @@ const envTabs: { key: EnvKey; label: string }[] = [
     <aside class="panel">
       <div class="panel-header">
         <div>
-          <div class="panel-title">Project Settings</div>
-          <div class="panel-sub">Define paths and files</div>
+          <div class="panel-title">项目设置</div>
+          <div class="panel-sub">定义环境路径与文件列表</div>
         </div>
         <div class="panel-actions">
-          <button v-if="projectFormMode === 'view'" class="ghost" @click="startEditProject">Edit</button>
-          <button v-if="projectFormMode !== 'view'" class="primary" @click="saveProject">Save</button>
-          <button v-if="projectFormMode !== 'view'" class="ghost" @click="projectFormMode = 'view'">Cancel</button>
+          <button v-if="projectFormMode === 'view'" class="ghost" @click="startEditProject">编辑</button>
+          <button v-if="projectFormMode !== 'view'" class="primary" @click="saveProject">保存</button>
+          <button v-if="projectFormMode !== 'view'" class="ghost" @click="projectFormMode = 'view'">取消</button>
         </div>
       </div>
 
       <div class="panel-body">
         <label class="field">
-          <span>Project Name</span>
+          <span>项目名称</span>
           <input v-model="projectForm.name" :disabled="projectFormMode === 'view'" />
         </label>
         <label class="field">
-          <span>Notes</span>
+          <span>备注</span>
           <input v-model="projectForm.notes" :disabled="projectFormMode === 'view'" />
         </label>
 
         <div class="env-block">
-          <div class="env-title">Local Env</div>
+          <div class="env-title">本地环境</div>
           <label class="field">
-            <span>Base Path</span>
+            <span>基础路径</span>
             <input v-model="projectForm.envs.local.basePath" :disabled="projectFormMode === 'view'" placeholder="/path/to/project" />
           </label>
           <label class="field">
-            <span>Files (one per line)</span>
+            <span>文件列表（每行一个）</span>
             <textarea v-model="projectForm.envs.local.files" :disabled="projectFormMode === 'view'" />
           </label>
         </div>
 
         <div class="env-block">
-          <div class="env-title">Campus Server</div>
+          <div class="env-title">校内服务器</div>
           <label class="field">
-            <span>SSH Alias</span>
+            <span>SSH 别名</span>
             <input v-model="projectForm.envs.campus.hostAlias" :disabled="projectFormMode === 'view'" placeholder="campus-host" />
           </label>
           <label class="field">
-            <span>Base Path</span>
+            <span>基础路径</span>
             <input v-model="projectForm.envs.campus.basePath" :disabled="projectFormMode === 'view'" placeholder="/srv/project" />
           </label>
           <label class="field">
-            <span>Files (one per line)</span>
+            <span>文件列表（每行一个）</span>
             <textarea v-model="projectForm.envs.campus.files" :disabled="projectFormMode === 'view'" />
           </label>
         </div>
 
         <div class="env-block">
-          <div class="env-title">Aliyun Server</div>
+          <div class="env-title">阿里云服务器</div>
           <label class="field">
-            <span>SSH Alias</span>
+            <span>SSH 别名</span>
             <input v-model="projectForm.envs.aliyun.hostAlias" :disabled="projectFormMode === 'view'" placeholder="aliyun-host" />
           </label>
           <label class="field">
-            <span>Base Path</span>
+            <span>基础路径</span>
             <input v-model="projectForm.envs.aliyun.basePath" :disabled="projectFormMode === 'view'" placeholder="/srv/project" />
           </label>
           <label class="field">
-            <span>Files (one per line)</span>
+            <span>文件列表（每行一个）</span>
             <textarea v-model="projectForm.envs.aliyun.files" :disabled="projectFormMode === 'view'" />
           </label>
         </div>
 
-        <button v-if="projectFormMode === 'edit'" class="danger" @click="deleteProject">Delete Project</button>
+        <button v-if="projectFormMode === 'edit'" class="danger" @click="deleteProject">删除项目</button>
       </div>
     </aside>
   </div>
