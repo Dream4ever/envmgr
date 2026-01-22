@@ -1,5 +1,5 @@
 import { createError } from "h3";
-import type { Project, EnvKey, EnvConfig } from "~/shared/types";
+import type { Project, EnvKey, EnvConfig } from "#shared/types";
 import { readProjectsFile } from "./storage";
 
 export async function getProject(projectId: string): Promise<Project> {

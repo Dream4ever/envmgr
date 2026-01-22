@@ -1,9 +1,9 @@
 import { readBody, createError } from "h3";
-import { assertEnvKey } from "~/server/utils/validation";
-import { getProject, getEnvConfig, assertFileAllowed } from "~/server/utils/projects";
-import { uploadRemoteFile } from "~/server/utils/ssh";
-import { readWorkspaceEnv } from "~/server/utils/env";
-import { appendAudit } from "~/server/utils/storage";
+import { assertEnvKey } from "../utils/validation";
+import { getProject, getEnvConfig, assertFileAllowed } from "../utils/projects";
+import { uploadRemoteFile } from "../utils/ssh";
+import { readWorkspaceEnv } from "../utils/env";
+import { appendAudit } from "../utils/storage";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);

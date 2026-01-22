@@ -1,5 +1,5 @@
 import { createError } from "h3";
-import { readProjectsFile, writeProjectsFile, appendAudit } from "~/server/utils/storage";
+import { readProjectsFile, writeProjectsFile, appendAudit } from "../../utils/storage";
 
 export default defineEventHandler(async (event) => {
   const projectId = event.context.params?.id;

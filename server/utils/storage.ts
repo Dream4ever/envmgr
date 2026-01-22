@@ -2,7 +2,7 @@ import path from "node:path";
 import fs from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { ensureDir, readJsonIfExists, writeJson, appendFileSafe } from "./fs";
-import type { ProjectsFile, EnvKey } from "~/shared/types";
+import type { ProjectsFile, EnvKey } from "#shared/types";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 const PROJECTS_FILE = path.join(DATA_DIR, "projects.json");

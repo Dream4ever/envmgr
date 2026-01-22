@@ -1,8 +1,8 @@
 import { getQuery, createError } from "h3";
-import { assertEnvKey, validateDotEnv } from "~/server/utils/validation";
-import { getProject, getEnvConfig, assertFileAllowed } from "~/server/utils/projects";
-import { readLocalEnv, readWorkspaceEnv } from "~/server/utils/env";
-import { readRemoteFile } from "~/server/utils/ssh";
+import { assertEnvKey, validateDotEnv } from "../utils/validation";
+import { getProject, getEnvConfig, assertFileAllowed } from "../utils/projects";
+import { readLocalEnv, readWorkspaceEnv } from "../utils/env";
+import { readRemoteFile } from "../utils/ssh";
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);

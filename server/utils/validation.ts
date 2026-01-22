@@ -1,5 +1,5 @@
 import { createError } from "h3";
-import { ENV_KEYS, type EnvKey } from "~/shared/types";
+import { ENV_KEYS, type EnvKey } from "#shared/types";
 
 const ENV_KEY_RE = /^[A-Za-z_][A-Za-z0-9_]*$/;
 

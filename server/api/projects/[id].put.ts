@@ -1,6 +1,6 @@
 import { readBody, createError } from "h3";
-import { ENV_KEYS, type EnvConfig, type EnvKey } from "~/shared/types";
-import { readProjectsFile, writeProjectsFile, appendAudit } from "~/server/utils/storage";
+import { ENV_KEYS, type EnvConfig, type EnvKey } from "#shared/types";
+import { readProjectsFile, writeProjectsFile, appendAudit } from "../../utils/storage";
 
 export default defineEventHandler(async (event) => {
   const projectId = event.context.params?.id;

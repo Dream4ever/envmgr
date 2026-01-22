@@ -1,4 +1,4 @@
-import { readProjectsFile } from "~/server/utils/storage";
+import { readProjectsFile } from "../utils/storage";
 
 export default defineEventHandler(async () => {
   const data = await readProjectsFile();

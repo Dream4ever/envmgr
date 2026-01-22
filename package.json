@@ -2,6 +2,10 @@
   "name": "envmgr",
   "private": true,
   "type": "module",
+  "imports": {
+    "#server/*": "./server/*",
+    "#shared/*": "./shared/*"
+  },
   "scripts": {
     "dev": "nuxi dev",
     "build": "nuxi build",

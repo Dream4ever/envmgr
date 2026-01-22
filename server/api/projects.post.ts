@@ -1,7 +1,7 @@
 import { readBody, createError } from "h3";
-import type { EnvKey, EnvConfig, Project } from "~/shared/types";
-import { ENV_KEYS } from "~/shared/types";
-import { createProjectId, readProjectsFile, writeProjectsFile, appendAudit } from "~/server/utils/storage";
+import type { EnvKey, EnvConfig, Project } from "#shared/types";
+import { ENV_KEYS } from "#shared/types";
+import { createProjectId, readProjectsFile, writeProjectsFile, appendAudit } from "../utils/storage";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);

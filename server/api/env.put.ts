@@ -1,8 +1,8 @@
 import { readBody, getQuery, createError } from "h3";
-import { assertEnvKey, validateDotEnv } from "~/server/utils/validation";
-import { getProject, getEnvConfig, assertFileAllowed } from "~/server/utils/projects";
-import { writeLocalEnv, writeWorkspaceEnv } from "~/server/utils/env";
-import { appendAudit } from "~/server/utils/storage";
+import { assertEnvKey, validateDotEnv } from "../utils/validation";
+import { getProject, getEnvConfig, assertFileAllowed } from "../utils/projects";
+import { writeLocalEnv, writeWorkspaceEnv } from "../utils/env";
+import { appendAudit } from "../utils/storage";
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);

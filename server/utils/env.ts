@@ -1,7 +1,7 @@
 import { readFileIfExists, writeFileSafe } from "./fs";
 import { resolveLocalPath } from "./paths";
 import { getWorkspacePath } from "./storage";
-import type { EnvKey } from "~/shared/types";
+import type { EnvKey } from "#shared/types";
 
 export async function readLocalEnv(basePath: string, file: string) {
   const filePath = resolveLocalPath(basePath, file);
