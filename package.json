@@ -3,12 +3,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "nuxt dev",
-    "build": "nuxt build",
-    "preview": "nuxt preview"
+    "dev": "nuxi dev",
+    "build": "nuxi build",
+    "preview": "nuxi preview"
   },
   "dependencies": {
     "diff": "^5.2.0",
-    "nuxt": "^3.12.4"
+    "nuxt": "^4.0.0"
   }
 }
