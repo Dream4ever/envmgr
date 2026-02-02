@@ -17,11 +17,16 @@ export default defineEventHandler(async (event) => {
     const files = Array.isArray(raw.files)
       ? raw.files.map((item: string) => String(item).trim()).filter(Boolean)
       : [];
+    const uploadMode =
+      raw.uploadMode === "sudo" || raw.uploadMode === "direct" ? raw.uploadMode : undefined;
+    const uploadTmpDir = raw.uploadTmpDir ? String(raw.uploadTmpDir).trim() : undefined;
     envs[key] = {
       basePath,
       hostAlias: raw.hostAlias ? String(raw.hostAlias).trim() : undefined,
       files,
-      notes: raw.notes ? String(raw.notes).trim() : undefined
+      notes: raw.notes ? String(raw.notes).trim() : undefined,
+      uploadMode,
+      uploadTmpDir
     };
   }
 

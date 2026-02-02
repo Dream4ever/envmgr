@@ -352,7 +352,8 @@ body {
 }
 
 .field input,
-.field textarea {
+.field textarea,
+.field select {
   border-radius: 12px;
   border: 1px solid var(--border);
   padding: 8px 10px;

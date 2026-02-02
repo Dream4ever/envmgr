@@ -28,13 +28,27 @@ export default defineEventHandler(async (event) => {
         continue;
       }
       const config = project.envs[key as EnvKey];
+      const nextUploadMode =
+        raw.uploadMode !== undefined
+          ? raw.uploadMode === "sudo" || raw.uploadMode === "direct"
+            ? raw.uploadMode
+            : undefined
+          : config.uploadMode;
+      const nextUploadTmpDir =
+        raw.uploadTmpDir !== undefined
+          ? raw.uploadTmpDir
+            ? String(raw.uploadTmpDir).trim()
+            : undefined
+          : config.uploadTmpDir;
       const next: EnvConfig = {
         basePath: raw.basePath !== undefined ? String(raw.basePath).trim() : config.basePath,
         hostAlias: raw.hostAlias !== undefined ? String(raw.hostAlias).trim() : config.hostAlias,
         files: Array.isArray(raw.files)
           ? raw.files.map((item: string) => String(item).trim()).filter(Boolean)
           : config.files,
-        notes: raw.notes !== undefined ? String(raw.notes).trim() : config.notes
+        notes: raw.notes !== undefined ? String(raw.notes).trim() : config.notes,
+        uploadMode: nextUploadMode,
+        uploadTmpDir: nextUploadTmpDir
       };
       project.envs[key as EnvKey] = next;
     }

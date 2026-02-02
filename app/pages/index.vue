@@ -43,8 +43,8 @@ const projectForm = reactive({
   notes: "",
   envs: {
     local: { basePath: "", files: "" },
-    campus: { hostAlias: "", basePath: "", files: "" },
-    aliyun: { hostAlias: "", basePath: "", files: "" }
+    campus: { hostAlias: "", basePath: "", files: "", uploadMode: "direct", uploadTmpDir: "" },
+    aliyun: { hostAlias: "", basePath: "", files: "", uploadMode: "direct", uploadTmpDir: "" }
   }
 });
 
@@ -100,9 +100,13 @@ function fillProjectForm() {
   projectForm.envs.campus.hostAlias = project.envs.campus.hostAlias ?? "";
   projectForm.envs.campus.basePath = project.envs.campus.basePath;
   projectForm.envs.campus.files = formatFiles(project.envs.campus.files);
+  projectForm.envs.campus.uploadMode = project.envs.campus.uploadMode ?? "direct";
+  projectForm.envs.campus.uploadTmpDir = project.envs.campus.uploadTmpDir ?? "";
   projectForm.envs.aliyun.hostAlias = project.envs.aliyun.hostAlias ?? "";
   projectForm.envs.aliyun.basePath = project.envs.aliyun.basePath;
   projectForm.envs.aliyun.files = formatFiles(project.envs.aliyun.files);
+  projectForm.envs.aliyun.uploadMode = project.envs.aliyun.uploadMode ?? "direct";
+  projectForm.envs.aliyun.uploadTmpDir = project.envs.aliyun.uploadTmpDir ?? "";
 }
 
 function startCreateProject() {
@@ -115,9 +119,13 @@ function startCreateProject() {
   projectForm.envs.campus.hostAlias = "";
   projectForm.envs.campus.basePath = "";
   projectForm.envs.campus.files = "";
+  projectForm.envs.campus.uploadMode = "direct";
+  projectForm.envs.campus.uploadTmpDir = "";
   projectForm.envs.aliyun.hostAlias = "";
   projectForm.envs.aliyun.basePath = "";
   projectForm.envs.aliyun.files = "";
+  projectForm.envs.aliyun.uploadMode = "direct";
+  projectForm.envs.aliyun.uploadTmpDir = "";
 }
 
 function startEditProject() {
@@ -138,12 +146,16 @@ async function saveProject() {
       campus: {
         hostAlias: projectForm.envs.campus.hostAlias || undefined,
         basePath: projectForm.envs.campus.basePath,
-        files: parseFiles(projectForm.envs.campus.files)
+        files: parseFiles(projectForm.envs.campus.files),
+        uploadMode: projectForm.envs.campus.uploadMode || undefined,
+        uploadTmpDir: projectForm.envs.campus.uploadTmpDir || undefined
       },
       aliyun: {
         hostAlias: projectForm.envs.aliyun.hostAlias || undefined,
         basePath: projectForm.envs.aliyun.basePath,
-        files: parseFiles(projectForm.envs.aliyun.files)
+        files: parseFiles(projectForm.envs.aliyun.files),
+        uploadMode: projectForm.envs.aliyun.uploadMode || undefined,
+        uploadTmpDir: projectForm.envs.aliyun.uploadTmpDir || undefined
       }
     }
   };
@@ -462,6 +474,21 @@ const isDirty = computed(() => content.value !== baseContent.value);
             <span>文件列表（每行一个）</span>
             <textarea v-model="projectForm.envs.campus.files" :disabled="projectFormMode === 'view'" />
           </label>
+          <label class="field">
+            <span>同步方式</span>
+            <select v-model="projectForm.envs.campus.uploadMode" :disabled="projectFormMode === 'view'">
+              <option value="direct">直接写入</option>
+              <option value="sudo">sudo 迁移</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>临时目录</span>
+            <input
+              v-model="projectForm.envs.campus.uploadTmpDir"
+              :disabled="projectFormMode === 'view'"
+              placeholder="默认 /tmp/envmgr"
+            />
+          </label>
         </div>
 
         <div class="env-block">
@@ -477,6 +504,21 @@ const isDirty = computed(() => content.value !== baseContent.value);
           <label class="field">
             <span>文件列表（每行一个）</span>
             <textarea v-model="projectForm.envs.aliyun.files" :disabled="projectFormMode === 'view'" />
+          </label>
+          <label class="field">
+            <span>同步方式</span>
+            <select v-model="projectForm.envs.aliyun.uploadMode" :disabled="projectFormMode === 'view'">
+              <option value="direct">直接写入</option>
+              <option value="sudo">sudo 迁移</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>临时目录</span>
+            <input
+              v-model="projectForm.envs.aliyun.uploadTmpDir"
+              :disabled="projectFormMode === 'view'"
+              placeholder="默认 /tmp/envmgr"
+            />
           </label>
         </div>
 

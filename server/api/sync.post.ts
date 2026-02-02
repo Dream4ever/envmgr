@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: "workspace file not found" });
   }
 
-  const remotePath = await uploadRemoteFile(config.hostAlias, config.basePath, file, workspace.path);
+  const remotePath = await uploadRemoteFile(config.hostAlias, config, file, workspace.path);
   await appendAudit({ action: "env.sync", projectId, env, file, remotePath });
 
   return { ok: true, remotePath };
